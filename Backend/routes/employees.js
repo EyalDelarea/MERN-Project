@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const GuardSchema = require("../modles/Employee");
+const EmployeeSchema = require("../Models/Employee");
 
 router.use(express.json());
 
@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
     searchOptions.name = new RegExp(req.query.name, "i");
   }
   try {
-    const employees = await GuardSchema.find(searchOptions);
+    const employees = await EmployeeSchema.find(searchOptions);
     res.send(JSON.stringify(employees));
   } catch (e) {
     res.send("Error", { error: e });
@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   const { firstName, lastName, email, role } = req.body;
 
-  const employee = new GuardSchema({
+  const employee = new EmployeeSchema({
     firstName: firstName,
     lastName: lastName,
     email: email,
@@ -40,7 +40,7 @@ router.post("/", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   try {
-    const deleteRes = await GuardSchema.deleteOne({ _uid: req.body.id });
+    const deleteRes = await EmployeeSchema.deleteOne({ _uid: req.body.id });
     if (deleteRes.n === 1) {
       res.status(200).json("Items was sucsessfuly deleted");
     } else {
@@ -57,7 +57,7 @@ router.delete("/:id", async (req, res) => {
 //update name attribute
 router.put("/:id", async (req, res) => {
   try {
-    const updatedGuard = await GuardSchema.findById(req.body.id);
+    const updatedGuard = await EmployeeSchema.findById(req.body.id);
     updatedGuard.name = req.body.name;
     const saveResponse = await updatedGuard.save();
 
