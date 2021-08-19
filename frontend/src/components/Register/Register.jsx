@@ -9,7 +9,7 @@ import AssignmentIndIcon from "@material-ui/icons/AssignmentInd";
 import { ButtonWrapper, FormWrapper, IconWrapper } from "../Login/Login";
 import styled, { keyframes } from "styled-components";
 import CustomAlert from "../Alerts/CustomAlert";
-import { sendRegisterRequest } from "../../NetworkActions/UsersActions/LoginActions";
+import { PostRequest } from "../../NetworkActions/UsersActions/LoginActions";
 import { bounceInLeft } from 'react-animations';
 
 const Icon = styled(AssignmentIndIcon)`
@@ -54,9 +54,9 @@ function Register({ history }) {
             password: "",
             password2: "",
         },
-         validationSchema: validationSchema,
+       //  validationSchema: validationSchema,
         onSubmit: async (values) => {
-            const res = await sendRegisterRequest(values,history);
+            const res = await PostRequest(values,history,"/users/register");
             const serverRes = {
                 responseCode: res.responseCode,
                 message: res.message,
@@ -80,7 +80,6 @@ function Register({ history }) {
        
      
         if (!!error && error.responseCode == "200") {
-            console.log("REDIR")
             timeoutRedirect();
             setRedirectMessage("Redirecting...");
         }

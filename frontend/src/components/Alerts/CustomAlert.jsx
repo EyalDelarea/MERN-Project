@@ -20,6 +20,11 @@ const Icon = styled(ClearIcon)`
 
 const CustomAlert = ({ responseCode, message, cancelAlert }) => {
 
+
+  if(typeof message ==='object'){
+      message = message.message
+  }
+
     let firstCodeDigit;
 
     try {

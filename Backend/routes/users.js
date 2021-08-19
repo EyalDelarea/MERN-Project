@@ -13,12 +13,6 @@ const buildResponse = (code,message)=>{
   }) 
 }
 
-router.get("/", (req, res) => {
-  res.send("usersLandingPag");
-});
-
-
-
 router.post("/register", async (req, res) => {
    try{
     const { firstName, lastName, email, password, password2 } = req.body;
@@ -83,12 +77,17 @@ router.post("/register", async (req, res) => {
 
 // Login
 router.post("/login", (req, res, next) => {
-  passport.authenticate("local", {
-    successRedirect: "/dashboard",
-    failureRedirect: "/users/login",
-    failureFlash: true,
+
+ 
+  passport.authenticate('local', function(err, user, info) {
+    if (err) { return next(err); }
+    if (!user) { return res.send(buildResponse('400',info)); }
+    req.logIn(user, function(err) {
+      if (err) {return next(err); }
+      return res.send(buildResponse('200',user));
+    });
   })(req, res, next);
-});
+})
 
 //logout
 router.get("/logout", (req, res) => {

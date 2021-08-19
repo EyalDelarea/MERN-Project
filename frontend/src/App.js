@@ -10,6 +10,7 @@ import Footer from "./components/footer/Footer"
 import WelcomePage from './components/WelcomePage/WelcomePage';
 import Login from './components/Login/Login';
 import Register from './components/Register/Register';
+import Dashboard from './components/Dashboard/Dashboard';
 
 
 
@@ -37,7 +38,7 @@ function App() {
        <Route exact path={"/"} component={WelcomePage}/>
        <Route exact path={"/login"} component={Login}/>
        <Route exact path={"/register"} component={Register}/>
-       <Route exact path={"/dashboard"} component={Footer}/>
+       <Route exact path={"/dashboard"} component={Dashboard}/>
      </Switch>
      <Footer/>
      </AppWrapper>

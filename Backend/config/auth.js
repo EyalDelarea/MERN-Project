@@ -1,11 +1,14 @@
 module.exports = {
     ensureAuthenticated: function(req, res, next) {
+
+      console.log(req.user)
       if (req.isAuthenticated()) {
         return next();
       }
-    //   req.flash('error_msg', 'Please log in to view that resource');
+  
     console.log("Not authendicated! redirecting to login...")
-      res.redirect('/users/login');
+    //TODO redirect to login
+      res.send('/users/login');
     },
     forwardAuthenticated: function(req, res, next) {
       if (!req.isAuthenticated()) {
@@ -14,3 +17,6 @@ module.exports = {
       res.redirect('/dashboard');      
     }
   };
+
+
+    //   req.flash('error_msg', 'Please log in to view that resource');

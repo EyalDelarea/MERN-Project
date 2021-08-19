@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BodyWrapper } from "../../Globals";
 import { useFormik } from "formik";
 import { StyledButton } from "../WelcomePage/WelcomePage";
 import { TextField } from "@material-ui/core";
 import * as yup from "yup";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
+import { PostRequest } from "../../NetworkActions/UsersActions/LoginActions"
+import CustomAlert from "../Alerts/CustomAlert";
+import { bounceInLeft } from 'react-animations';
 
 export const ButtonWrapper = styled.div`
   display: grid;
@@ -24,7 +27,18 @@ export const Icon = styled(LockOpenIcon)`
 export const FormWrapper = styled.div`
   max-width: 400px;
 `;
-function Login() {
+const bounceAnimation = keyframes`${bounceInLeft}`;
+const RedirectWrapper = styled.div`
+  text-align: center;
+  margin-top: 15px;
+  font-weight: bold;
+  animation: 2s ${bounceAnimation};
+`;
+function Login({history}) {
+
+    const [error, setError] = useState();
+  
+  const [redirectMessage, setRedirectMessage] = useState();
     const validationSchema = yup.object({
         email: yup
             .string("Enter your email")
@@ -36,17 +50,42 @@ function Login() {
             .required("Password is required"),
     });
 
+    function clearError  (){
+        setError({})
+    }
+    
+
     const formik = useFormik({
         initialValues: {
             email: "",
             password: "",
         },
-        validationSchema: validationSchema,
-        onSubmit: (values) => {
-            console.log("i've been called");
-            alert(JSON.stringify(values, null, 2));
+        // validationSchema: validationSchema,
+        onSubmit:async (values)=> {
+
+            const response = await PostRequest(values,history,"/users/login")
+            const serverRes = {
+                responseCode: response.responseCode,
+                message: response.message,
+            };
+            setError(serverRes);
         },
     });
+
+    useEffect(() => {
+        const timeoutRedirect = async () => {
+            setTimeout(() => {
+                history.push("/dashboard");
+            }, 3000);
+        };
+       
+     
+        if (!!error && error.responseCode == "200") {
+            timeoutRedirect();
+            setRedirectMessage("Redirecting...");
+        }
+    }, [error, history]);
+
 
     return (
         <BodyWrapper>
@@ -60,8 +99,8 @@ function Login() {
                         id="email"
                         name="email"
                         label={
-                            formik.errors.email
-                                ? formik.touched.email && formik.errors.email
+                            formik.errors.email && formik.errors.email
+                                ? formik.errors.email
                                 : "Email"
                         }
                         value={formik.values.email}
@@ -73,8 +112,8 @@ function Login() {
                         id="password"
                         name="password"
                         label={
-                            formik.errors.password
-                                ? formik.touched.password && formik.errors.password
+                            formik.errors.password  && formik.errors.password
+                                ? formik.errors.password
                                 : "Password"
                         }
                         type="password"
@@ -88,6 +127,16 @@ function Login() {
                         </StyledButton>
                     </ButtonWrapper>
                 </form>
+                {!!error ? (
+                    <CustomAlert
+                        responseCode={error.responseCode}
+                        message={error.message}
+                        cancelAlert={clearError}
+                    />
+                ) : (
+                   ""
+                )}
+                {!!redirectMessage ?<RedirectWrapper>{ redirectMessage}</RedirectWrapper> : ""}
             </FormWrapper>
         </BodyWrapper>
     );

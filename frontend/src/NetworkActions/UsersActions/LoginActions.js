@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 
-export const sendRegisterRequest = async (body, history) => {
+export const PostRequest = async (body, history,path) => {
 
   //Generate the post request info
   const requestOptions = {
@@ -10,11 +10,17 @@ export const sendRegisterRequest = async (body, history) => {
   };
 
   try {
-    const response = await fetch("/users/register", requestOptions);
+    const response = await fetch(path, requestOptions);
+    const {url} = await response;
+    const relativePath = (url.substring(url.lastIndexOf('/') + 1));
+   
     //In case of redicartion from our server
     if (response.redirected) {
-      history.push("/");
-      return;
+      history.replace("/"+relativePath,{msg:'failed'});
+      return {
+        responseCode: '303',
+        message: 'Redirecting',
+      };
     } else {
       const data = await response.json();
       return {
@@ -23,10 +29,12 @@ export const sendRegisterRequest = async (body, history) => {
       };
     }
   } catch (e) {
-    console.log("Client error,request is broken " + e);
+    console.log("Client error " + e);
     return {
-      responseCode: "400",
-      message: "There is something wrong with the request",
+      responseCode: "500",
+      message: "Request time-out",
     };
   }
 };
+
+

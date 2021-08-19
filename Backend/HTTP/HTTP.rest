@@ -1,13 +1,10 @@
 
-POST http://localhost:5000/users/register HTTP/1.1
+POST http://localhost:5000/users/login HTTP/1.1
 content-type: application/json
 
 {
-    "firstName":"eyal",
-    "lastName":"delarea",
     "email":"eyaldelarea@gmail.com",
-    "password1":"delarea6",
-    "password2":"delarea6"
+    "password":"delarea6",
 }
 
 ###
