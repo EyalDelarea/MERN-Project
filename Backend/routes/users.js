@@ -4,6 +4,15 @@ const User = require("../Models/User");
 const router = express.Router();
 const passport = require("passport");
 
+
+
+const buildResponse = (code,message)=>{
+  return JSON.stringify({
+    type:code,
+    message:message
+  }) 
+}
+
 router.get("/", (req, res) => {
   res.send("usersLandingPag");
 });
@@ -11,7 +20,11 @@ router.get("/login", (req, res) => {
   res.send("Login");
 });
 router.post("/register", async (req, res) => {
-  const { firstName, lastName, email, password1, password2 } = req.body;
+
+  console.log(req)
+
+  console.log("register has been pinged")
+  const { firstName, lastName, email, password, password2 } = req.body;
   const errors = [];
   //validate fields (server side or client side or both?)
   for (const item of Object.values(req.body)) {
@@ -20,10 +33,10 @@ router.post("/register", async (req, res) => {
     }
   }
 
-  if (password1 !== password2) {
+  if (password !== password2) {
     errors.push("Passwords do no match");
   }
-  if (password1.length < 6) {
+  if (password.length < 6) {
     errors.push("Password length should be at least 6 characters");
   }
 
@@ -33,20 +46,20 @@ router.post("/register", async (req, res) => {
       firstName,
       lastName,
       email,
-      password1,
+      password1: password,
       password2,
     });
   } else {
     const existsCheck = await User.findOne({ email: email });
     if (existsCheck) {
       //email is taken
-      res.send("email is taken");
+      res.send(buildResponse('400',"Email is already taken"));
     } else {
       const newUser = new User({
         firstName: firstName,
         lastName: lastName,
         email: email,
-        password: password1,
+        password: password,
       });
       //Hash password
       bcrypt.genSalt(10, async (err, salt) => {
@@ -56,9 +69,9 @@ router.post("/register", async (req, res) => {
           //Boilerplate with try catch
           const insert = await newUser.save();
           if (insert) {
-            res.redirect("/login");
+            res.send(buildResponse('200','User registerd sucessfuly'));
           } else {
-            res.redirect("/register", { ...newUser, password: password1 });
+            res.redirect("/register", { ...newUser, password: password });
           }
         });
       });
