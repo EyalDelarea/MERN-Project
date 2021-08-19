@@ -5,21 +5,30 @@ import { StyledButton } from "../WelcomePage/WelcomePage";
 import { TextField } from "@material-ui/core";
 import * as yup from "yup";
 import AssignmentIndIcon from "@material-ui/icons/AssignmentInd";
-import fetch from "node-fetch";
 
 import { ButtonWrapper, FormWrapper, IconWrapper } from "../Login/Login";
-import styled from "styled-components";
-import { Alert, AlertTitle } from "@material-ui/lab";
+import styled, { keyframes } from "styled-components";
 import CustomAlert from "../Alerts/CustomAlert";
+import { sendRegisterRequest } from "../../NetworkActions/UsersActions/LoginActions";
+import { bounceInLeft } from 'react-animations';
 
 const Icon = styled(AssignmentIndIcon)`
   width: 150px !important;
   height: 50px !important;
 `;
+const bounceAnimation = keyframes`${bounceInLeft}`;
+
+const RedirectWrapper = styled.div`
+  text-align: center;
+  margin-top: 15px;
+  font-weight: bold;
+  animation: 2s ${bounceAnimation};
+`;
 
 function Register({ history }) {
     const [error, setError] = useState();
-    const [redirectMessage, setRedirectMessage] = useState()
+  
+    const [redirectMessage, setRedirectMessage] = useState();
 
     const validationSchema = yup.object({
         firstName: yup.string().required("First name is required"),
@@ -45,43 +54,37 @@ function Register({ history }) {
             password: "",
             password2: "",
         },
-        validationSchema: validationSchema,
-        onSubmit: (values) => {
-            const requestOptions = {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(values),
+         validationSchema: validationSchema,
+        onSubmit: async (values) => {
+            const res = await sendRegisterRequest(values,history);
+            const serverRes = {
+                responseCode: res.responseCode,
+                message: res.message,
             };
-            sendRegisterForm(requestOptions);
 
+            setError(serverRes);
+           
         },
     });
 
 
-    const sendRegisterForm = async (requestOptions) => {
-        fetch("/users/register", requestOptions)
-            .then((response) => response.json())
-            .then((data) => {
-                setError({
-                    responseCode: String(data.type),
-                    message: data.message
-                })
-            });
-    };
-
+    function clearError  (){
+        setError({})
+    }
     useEffect(() => {
         const timeoutRedirect = async () => {
             setTimeout(() => {
-                history.push('/login')
-            }, 3000)
+                history.push("/login");
+            }, 3000);
+        };
+       
+     
+        if (!!error && error.responseCode == "200") {
+            console.log("REDIR")
+            timeoutRedirect();
+            setRedirectMessage("Redirecting...");
         }
-        if (!!error && error.type==='200'){
-            timeoutRedirect()
-            setRedirectMessage("Redirecting in 3 seconds...")
-        }
-          
-    }, [error, history])
-
+    }, [error, history]);
 
     return (
         <BodyWrapper>
@@ -163,14 +166,19 @@ function Register({ history }) {
                         </StyledButton>
                     </ButtonWrapper>
                 </form>
-                {!!error ? <CustomAlert responseCode={error.responseCode} message={error.message} /> : ''}
-                {!!redirectMessage ? redirectMessage : ''}
+                {!!error ? (
+                    <CustomAlert
+                        responseCode={error.responseCode}
+                        message={error.message}
+                        cancelAlert={clearError}
+                    />
+                ) : (
+                   ""
+                )}
+                {!!redirectMessage ?<RedirectWrapper>{ redirectMessage}</RedirectWrapper> : ""}
             </FormWrapper>
         </BodyWrapper>
     );
 }
 
 export default Register;
-
-
-

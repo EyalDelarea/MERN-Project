@@ -16,76 +16,69 @@ const buildResponse = (code,message)=>{
 router.get("/", (req, res) => {
   res.send("usersLandingPag");
 });
-router.get("/login", (req, res) => {
-  res.send("Login");
-});
+
+
+
 router.post("/register", async (req, res) => {
-
-  console.log(req)
-
-  console.log("register has been pinged")
-  const { firstName, lastName, email, password, password2 } = req.body;
-  const errors = [];
-  //validate fields (server side or client side or both?)
-  for (const item of Object.values(req.body)) {
-    if (item === "" || item === undefined) {
-      errors.push("Please fill all the fields");
+   try{
+    const { firstName, lastName, email, password, password2 } = req.body;
+    const errors = [];
+    //validate fields (server side or client side or both?)
+    for (const item of Object.values(req.body)) {
+      if (item === "" || item === undefined) {
+        errors.push("Please fill all the fields");
+      }
     }
-  }
-
-  if (password !== password2) {
-    errors.push("Passwords do no match");
-  }
-  if (password.length < 6) {
-    errors.push("Password length should be at least 6 characters");
-  }
-
-  if (errors.length > 0) {
-    res.render("register", {
-      errors,
-      firstName,
-      lastName,
-      email,
-      password1: password,
-      password2,
-    });
-  } else {
-    const existsCheck = await User.findOne({ email: email });
-    if (existsCheck) {
-      //email is taken
-      res.send(buildResponse('400',"Email is already taken"));
+  
+    if (password !== password2) {
+      errors.push("Passwords do no match");
+    }
+    if (password.length < 6) {
+      errors.push("Password length should be at least 6 characters");
+    }
+  
+    if (errors.length > 0) {
+      res.render("register", {
+        errors,
+        firstName,
+        lastName,
+        email,
+        password1: password,
+        password2,
+      });
     } else {
-      const newUser = new User({
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        password: password,
-      });
-      //Hash password
-      bcrypt.genSalt(10, async (err, salt) => {
-        bcrypt.hash(newUser.password, salt, async (err, hash) => {
-          if (err) throw err;
-          newUser.password = hash;
-          //Boilerplate with try catch
-          const insert = await newUser.save();
-          if (insert) {
-            res.send(buildResponse('200','User registerd sucessfuly'));
-          } else {
-            res.redirect("/register", { ...newUser, password: password });
-          }
+      const existsCheck = await User.findOne({ email: email });
+      if (existsCheck) {
+        //email is taken
+        res.send(buildResponse('400',"Email is already taken"));
+      } else {
+        const newUser = new User({
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          password: password,
         });
-      });
+        //Hash password
+        bcrypt.genSalt(10, async (err, salt) => {
+          bcrypt.hash(newUser.password, salt, async (err, hash) => {
+            if (err) throw err;
+            newUser.password = hash;
+            //Boilerplate with try catch
+            const insert = await newUser.save();
+            if (insert) {
+              res.send(buildResponse('200','User registerd sucessfuly'));
+            } else {
+              res.send(buildResponse('500','Saving the user has failed,Please try again later.'));
+            }
+          });
+        });
+      }
     }
+  }catch(e){
+    console.log('Error :'+e)
+   res.send(buildResponse('500',e.message))
+  
   }
-
-  // Login
-  router.post("/login", (req, res, next) => {
-    passport.authenticate("local", {
-      successRedirect: "/dashboard",
-      failureRedirect: "/users/login",
-      failureFlash: true,
-    })(req, res, next);
-  });
 });
 
 // Login
