@@ -8,13 +8,18 @@ import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
 import Navbar from "./components/navbar/Navbar"
 import Footer from "./components/footer/Footer"
 import WelcomePage from './components/WelcomePage/WelcomePage';
+import Login from './components/Login/Login';
+import Register from './components/Register/Register';
+
 
 
 const AppWrapper = styled.div`
     display: flex;
-    background: linear-gradient(#6CAE75 30%, #8BBD8B 90%);
-  min-height: 100vh;
   flex-direction: column;
+  background: linear-gradient(#6cae75 30%, #79bf79 90%);
+  min-height: 100vh;
+  
+  
 `;
 
 
@@ -23,18 +28,23 @@ const AppWrapper = styled.div`
 
 function App() {
   return (
+   
  <Router>
-     <AppWrapper>
-     <Navbar/>
+  
+      <AppWrapper>
+      <Navbar/>
      <Switch>
        <Route exact path={"/"} component={WelcomePage}/>
-       <Route exact path={"/login"} component={Footer}/>
-       <Route exact path={"/register"} component={Footer}/>
+       <Route exact path={"/login"} component={Login}/>
+       <Route exact path={"/register"} component={Register}/>
        <Route exact path={"/dashboard"} component={Footer}/>
      </Switch>
      <Footer/>
-   </AppWrapper>
+     </AppWrapper>
+     
  </Router>
+
+  
   );
 }
 

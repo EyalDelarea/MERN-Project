@@ -8,10 +8,8 @@ const FooterWrapper = styled.div`
   color:white;
   width:100%;
   min-height: 10vh;
-  opacity: 0.9;
   background: black;
-    justify-items: stretch;
-  align-items: stretch;
+
   justify-content: center;
 `;
 
