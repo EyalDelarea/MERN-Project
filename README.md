@@ -4,3 +4,11 @@ Front-End containing simple Register\Login and Dashboard for users to log in to 
 
 Back-End supporting the authentication process with PassportJS and using JWT tokens.
 
+
+
+
+
+https://user-images.githubusercontent.com/23456142/130347796-a8681332-f90a-4f39-b0d2-4b9665f17795.mp4
+
+
+
