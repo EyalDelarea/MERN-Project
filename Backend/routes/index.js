@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router()
-const {ensureAuthenticated} = require('../config/auth')
+const {ensureAuthenticated} = require('../config/auth');
+const passport = require('passport');
 
 
 
@@ -8,20 +9,14 @@ router.get('/',(req,res)=>{
     res.send("Hello World")
 })
 
-// router.get('/dashboard',(req,res)=>{
-//     console.log("hey")
-//     console.log(req.user)
-    
+//Change to auth
+router.get('/dashboard', passport.authenticate('jwt', { session: false }),
+    function(req, res) {
+        res.json("it worked");
+    }
+);
 
-//    try{
-//        const user = req.user
-//         res.send("/dashboard",{
-//             name:req.user.name
-//         })
-//    }catch(e){
-//        res.redirect('/login')
-//    }
-// })
+
 
 
 

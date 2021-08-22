@@ -28,3 +28,5 @@ yarn-debug.log*
 yarn-error.log*
 Backend/node_modules/.bin/node-pre-gyp
 Backend/utils/mongoCommands.txt
+TODO.md
+Backend/config/utils/id_rsa_priv.pem

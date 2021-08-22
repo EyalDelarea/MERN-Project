@@ -10,7 +10,8 @@ import { ButtonWrapper, FormWrapper, IconWrapper } from "../Login/Login";
 import styled, { keyframes } from "styled-components";
 import CustomAlert from "../Alerts/CustomAlert";
 import { PostRequest } from "../../NetworkActions/UsersActions/LoginActions";
-import { bounceInLeft } from 'react-animations';
+import { bounceInLeft } from "react-animations";
+import { useCookies } from "react-cookie";
 
 const Icon = styled(AssignmentIndIcon)`
   width: 150px !important;
@@ -27,7 +28,8 @@ const RedirectWrapper = styled.div`
 
 function Register({ history }) {
     const [error, setError] = useState();
-  
+    const [cookies, setCookie, removeCookie] = useCookies(["Set-Cookie"]);
+
     const [redirectMessage, setRedirectMessage] = useState();
 
     const validationSchema = yup.object({
@@ -54,22 +56,20 @@ function Register({ history }) {
             password: "",
             password2: "",
         },
-       //  validationSchema: validationSchema,
+        //  validationSchema: validationSchema,
         onSubmit: async (values) => {
-            const res = await PostRequest(values,history,"/users/register");
+            const res = await PostRequest(values, history, "/users/register");
             const serverRes = {
                 responseCode: res.responseCode,
                 message: res.message,
             };
 
             setError(serverRes);
-           
         },
     });
 
-
-    function clearError  (){
-        setError({})
+    function clearError() {
+        setError({});
     }
     useEffect(() => {
         const timeoutRedirect = async () => {
@@ -77,13 +77,13 @@ function Register({ history }) {
                 history.push("/login");
             }, 3000);
         };
-       
-     
+
         if (!!error && error.responseCode == "200") {
             timeoutRedirect();
+
             setRedirectMessage("Redirecting...");
         }
-    }, [error, history]);
+    }, [error, history, cookies]);
 
     return (
         <BodyWrapper>
@@ -172,9 +172,13 @@ function Register({ history }) {
                         cancelAlert={clearError}
                     />
                 ) : (
-                   ""
+                    ""
                 )}
-                {!!redirectMessage ?<RedirectWrapper>{ redirectMessage}</RedirectWrapper> : ""}
+                {!!redirectMessage ? (
+                    <RedirectWrapper>{redirectMessage}</RedirectWrapper>
+                ) : (
+                    ""
+                )}
             </FormWrapper>
         </BodyWrapper>
     );

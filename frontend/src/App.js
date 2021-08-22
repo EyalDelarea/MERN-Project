@@ -1,8 +1,6 @@
-
 import './App.css';
 import React from 'react';
 import styled from 'styled-components';
-import { Box } from '@material-ui/core';
 import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
 
 import Navbar from "./components/navbar/Navbar"

@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
 
+
 export const PostRequest = async (body, history,path) => {
 
   //Generate the post request info
@@ -13,6 +14,7 @@ export const PostRequest = async (body, history,path) => {
     const response = await fetch(path, requestOptions);
     const {url} = await response;
     const relativePath = (url.substring(url.lastIndexOf('/') + 1));
+
    
     //In case of redicartion from our server
     if (response.redirected) {
@@ -23,6 +25,7 @@ export const PostRequest = async (body, history,path) => {
       };
     } else {
       const data = await response.json();
+      console.log(data)
       return {
         responseCode: data.type,
         message: data.message,

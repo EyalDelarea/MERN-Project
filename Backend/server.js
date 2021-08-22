@@ -7,19 +7,24 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 
 
+
 const app = express();
 
-require('./config/passport')(passport);
 
+require('../Backend/config/JwtStrategy')
+require('../Backend/config/authenticate')
+require('./config/passport')(passport);
 
 
 
 app.use(express.json());
 
 
+
 mongoose.connect(process.env.DATABASE_URL,{
     useNewUrlParser:true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+  
 })
 
 const db = mongoose.connection

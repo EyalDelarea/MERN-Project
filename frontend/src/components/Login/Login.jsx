@@ -9,6 +9,8 @@ import LockOpenIcon from "@material-ui/icons/LockOpen";
 import { PostRequest } from "../../NetworkActions/UsersActions/LoginActions"
 import CustomAlert from "../Alerts/CustomAlert";
 import { bounceInLeft } from 'react-animations';
+import { useCookies } from 'react-cookie';
+
 
 export const ButtonWrapper = styled.div`
   display: grid;
@@ -35,6 +37,8 @@ const RedirectWrapper = styled.div`
   animation: 2s ${bounceAnimation};
 `;
 function Login({history}) {
+
+    const [cookies, setCookie, removeCookie] = useCookies(['Set-Cookie']);
 
     const [error, setError] = useState();
   
@@ -79,10 +83,13 @@ function Login({history}) {
             }, 3000);
         };
        
-     
+        //erro code can be a number type or string
+        // eslint-disable-next-line eqeqeq
         if (!!error && error.responseCode == "200") {
-            timeoutRedirect();
+           timeoutRedirect();
             setRedirectMessage("Redirecting...");
+            
+ 
         }
     }, [error, history]);
 
